@@ -6,10 +6,7 @@ import com.yc.distribution.base.utils.PageParamHelper;
 import com.yc.distribution.model.User;
 import com.yc.distribution.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
@@ -85,6 +82,18 @@ public class UserController {
 
     @PostMapping("query")
     public ResponseEntity<PageBean> queryUser(HttpServletRequest request) {
+        try {
+            PageParam pageParam = PageParamHelper.getPageParam(request);
+            PageBean pageInfo = this.userFacade.listPage(pageParam);
+            return ResponseEntity.ok(pageInfo);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
+    }
+
+    @GetMapping("queryDistribution")
+    public ResponseEntity<PageBean> queryDistribution(@RequestParam String id, HttpServletRequest request) {
         try {
             PageParam pageParam = PageParamHelper.getPageParam(request);
             PageBean pageInfo = this.userFacade.listPage(pageParam);
