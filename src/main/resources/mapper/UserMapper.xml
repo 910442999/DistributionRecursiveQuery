@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+		<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.distribution.dao.UserMapper">
+
+	<resultMap id="RM_User" type="com.yc.distribution.model.User">
+        <result property="id" column="id"/>
+        <result property="userLevel" column="user_level"/>
+        <result property="parentId" column="parent_id"/>
+        <result property="extractMoney" column="extract_money"/>
+        <result property="surplusMoney" column="surplus_money"/>
+        <result property="incomeMoney" column="income_money"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,user_level,parent_id,extract_money,surplus_money,income_money
+	    ]]>
+	</sql>
+
+	<!--保存 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	    <![CDATA[
+	        INSERT INTO t_user ( 
+	        	id ,
+	        	user_level ,
+	        	parent_id ,
+	        	extract_money ,
+	        	surplus_money ,
+	        	income_money 
+	        ) VALUES (
+	        	#{id} ,
+	        	#{userLevel} ,
+	        	#{parentId} ,
+	        	#{extractMoney} ,
+	        	#{surplusMoney} ,
+	        	#{incomeMoney} 
+	        )
+	    ]]>
+	</insert>
+	
+	<!-- 批量保存 -->
+	<insert id="batchInsert">
+	    <![CDATA[
+	        INSERT INTO t_user (
+	        		id ,
+	        		user_level ,
+	        		parent_id ,
+	        		extract_money ,
+	        		surplus_money ,
+	        		income_money 
+	        ) VALUES 
+	         ]]>
+	        <foreach item="item" collection="list"   separator=",">
+	        	(
+					#{item.id} ,
+					#{item.userLevel} ,
+					#{item.parentId} ,
+					#{item.extractMoney} ,
+					#{item.surplusMoney} ,
+					#{item.incomeMoney} 
+	        	)
+			</foreach>
+	   
+	</insert>
+
+	<!-- update 条件组合 -->
+	<sql id="update_sql">
+		<set>
+			<if test="userLevel != null and userLevel != ''">
+				user_level = #{userLevel} ,
+			</if>
+			<if test="parentId != null and parentId != ''">
+				parent_id = #{parentId} ,
+			</if>
+			<if test="extractMoney != null">
+				extract_money = #{extractMoney} ,
+			</if>
+			<if test="surplusMoney != null">
+				surplus_money = #{surplusMoney} ,
+			</if>
+			<if test="incomeMoney != null">
+				income_money = #{incomeMoney} 
+			</if>
+		</set>
+	</sql>
+	
+	<!-- 修改 -->
+	<update id="updateByPrimaryKey">
+		UPDATE t_user
+		<include refid="update_sql" />
+		WHERE
+			id = #{id} 
+	</update>
+
+		<!-- 修改 -->
+	<update id="batchUpdateByIds">
+		UPDATE t_user
+		<include refid="update_sql" />
+		WHERE
+		id IN
+			<foreach item="ids" collection="list" open="(" separator="," close=")">
+				#{ids}
+			</foreach>
+	</update>
+
+	<!-- 根据ID删除 -->
+	<delete id="deleteByPrimaryKey">
+    	<![CDATA[
+        	DELETE FROM t_user 
+        	WHERE
+        		id = #{id} 
+    	]]>
+	</delete>
+	
+	<!-- 批量删除 -->
+	<delete id="batchDeleteByIds">
+        DELETE FROM t_user 
+        WHERE id IN 
+        <foreach item="ids" collection="list" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+    </delete>
+
+	<!-- selsect -->
+	<select id="selectByPrimaryKey" resultMap="RM_User">
+		SELECT
+		<include refid="columns" />
+		FROM t_user
+		WHERE
+		id = #{id} 
+	</select>
+
+
+
+
+
+	<!-- 模糊查询这样： 字段名 LIKE CONCAT('%',CONCAT(#{model.userName},'%')) -->
+	<sql id="findPage_where">
+		<where>
+				<if test="id != null and id !=''">
+					AND id = #{id}
+				</if>
+				<if test="userLevel != null and userLevel !=''">
+					AND user_level = #{userLevel}
+				</if>
+				<if test="parentId != null and parentId !=''">
+					AND parent_id = #{parentId}
+				</if>
+				<if test="extractMoney != null">
+					AND extract_money = #{extractMoney}
+				</if>
+				<if test="surplusMoney != null">
+					AND surplus_money = #{surplusMoney}
+				</if>
+				<if test="incomeMoney != null">
+					AND income_money = #{incomeMoney}
+				</if>
+		</where>
+	</sql>
+
+	<!-- selsect by obj -->
+	<select id="listByObj" resultMap="RM_User" parameterType="com.yc.distribution.model.User">
+	SELECT
+	<include refid="columns" />
+	FROM t_user
+	<include refid="findPage_where" />
+	</select>
+
+
+	<!-- 获取总数 -->
+	<select id="listPageCount" resultType="long" parameterType="map">
+		SELECT COUNT(1)
+		FROM t_user
+		<include refid="findPage_where" />
+	</select>  
+
+	<select id="listPage" resultMap="RM_User" parameterType="map">
+		 SELECT
+		<include refid="columns" />
+		FROM t_user
+		<include refid="findPage_where" />
+
+		<if test="sortColumns != null and sortColumns !=''">
+			ORDER BY ${sortColumns}
+		</if>
+		
+		<if test="offset != null and pageSize != null">
+			LIMIT  #{offset}, #{pageSize}
+		</if>
+	</select>
+
+</mapper>

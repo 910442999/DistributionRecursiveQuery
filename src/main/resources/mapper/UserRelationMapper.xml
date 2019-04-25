@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+		<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yc.distribution.dao.UserRelationMapper">
+
+	<resultMap id="RM_UserRelation" type="com.yc.distribution.model.UserRelation">
+        <result property="id" column="id"/>
+        <result property="childId" column="child_id"/>
+        <result property="userId" column="user_id"/>
+        <result property="parentId" column="parent_id"/>
+	</resultMap>
+	
+	<!-- 用于select查询公用抽取的列 -->
+	<sql id="columns">
+	    <![CDATA[
+		id,child_id,user_id,parent_id
+	    ]]>
+	</sql>
+
+	<!--保存 -->
+	<insert id="insert" useGeneratedKeys="true" keyProperty="id">
+	    <![CDATA[
+	        INSERT INTO t_user_relation ( 
+	        	id ,
+	        	child_id ,
+	        	user_id ,
+	        	parent_id 
+	        ) VALUES (
+	        	#{id} ,
+	        	#{childId} ,
+	        	#{userId} ,
+	        	#{parentId} 
+	        )
+	    ]]>
+	</insert>
+	
+	<!-- 批量保存 -->
+	<insert id="batchInsert">
+	    <![CDATA[
+	        INSERT INTO t_user_relation (
+	        		id ,
+	        		child_id ,
+	        		user_id ,
+	        		parent_id 
+	        ) VALUES 
+	         ]]>
+	        <foreach item="item" collection="list"   separator=",">
+	        	(
+					#{item.id} ,
+					#{item.childId} ,
+					#{item.userId} ,
+					#{item.parentId} 
+	        	)
+			</foreach>
+	   
+	</insert>
+
+	<!-- update 条件组合 -->
+	<sql id="update_sql">
+		<set>
+			<if test="childId != null and childId != ''">
+				child_id = #{childId} ,
+			</if>
+			<if test="userId != null and userId != ''">
+				user_id = #{userId} ,
+			</if>
+			<if test="parentId != null and parentId != ''">
+				parent_id = #{parentId} 
+			</if>
+		</set>
+	</sql>
+	
+	<!-- 修改 -->
+	<update id="updateByPrimaryKey">
+		UPDATE t_user_relation
+		<include refid="update_sql" />
+		WHERE
+			id = #{id} 
+	</update>
+
+		<!-- 修改 -->
+	<update id="batchUpdateByIds">
+		UPDATE t_user_relation
+		<include refid="update_sql" />
+		WHERE
+		id IN
+			<foreach item="ids" collection="list" open="(" separator="," close=")">
+				#{ids}
+			</foreach>
+	</update>
+
+	<!-- 根据ID删除 -->
+	<delete id="deleteByPrimaryKey">
+    	<![CDATA[
+        	DELETE FROM t_user_relation 
+        	WHERE
+        		id = #{id} 
+    	]]>
+	</delete>
+	
+	<!-- 批量删除 -->
+	<delete id="batchDeleteByIds">
+        DELETE FROM t_user_relation 
+        WHERE id IN 
+        <foreach item="ids" collection="list" open="(" separator="," close=")">
+			#{ids}
+		</foreach>
+    </delete>
+
+	<!-- selsect -->
+	<select id="selectByPrimaryKey" resultMap="RM_UserRelation">
+		SELECT
+		<include refid="columns" />
+		FROM t_user_relation
+		WHERE
+		id = #{id} 
+	</select>
+
+
+
+
+
+	<!-- 模糊查询这样： 字段名 LIKE CONCAT('%',CONCAT(#{model.userName},'%')) -->
+	<sql id="findPage_where">
+		<where>
+				<if test="id != null and id !=''">
+					AND id = #{id}
+				</if>
+				<if test="childId != null and childId !=''">
+					AND child_id = #{childId}
+				</if>
+				<if test="userId != null and userId !=''">
+					AND user_id = #{userId}
+				</if>
+				<if test="parentId != null and parentId !=''">
+					AND parent_id = #{parentId}
+				</if>
+		</where>
+	</sql>
+
+	<!-- selsect by obj -->
+	<select id="listByObj" resultMap="RM_UserRelation" parameterType="com.yc.distribution.model.UserRelation">
+	SELECT
+	<include refid="columns" />
+	FROM t_user_relation
+	<include refid="findPage_where" />
+	</select>
+
+
+	<!-- 获取总数 -->
+	<select id="listPageCount" resultType="long" parameterType="map">
+		SELECT COUNT(1)
+		FROM t_user_relation
+		<include refid="findPage_where" />
+	</select>  
+
+	<select id="listPage" resultMap="RM_UserRelation" parameterType="map">
+		 SELECT
+		<include refid="columns" />
+		FROM t_user_relation
+		<include refid="findPage_where" />
+
+		<if test="sortColumns != null and sortColumns !=''">
+			ORDER BY ${sortColumns}
+		</if>
+		
+		<if test="offset != null and pageSize != null">
+			LIMIT  #{offset}, #{pageSize}
+		</if>
+	</select>
+
+</mapper>
