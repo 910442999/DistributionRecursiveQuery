@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50725
 File Encoding         : 65001
 
-Date: 2019-04-25 18:22:44
+Date: 2019-04-26 18:10:47
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -32,6 +32,16 @@ CREATE TABLE `t_user` (
 -- ----------------------------
 -- Records of t_user
 -- ----------------------------
+INSERT INTO `t_user` VALUES ('100', '4', null, null, null, null);
+INSERT INTO `t_user` VALUES ('11', '0', '', null, null, null);
+INSERT INTO `t_user` VALUES ('22', '0', '', null, null, null);
+INSERT INTO `t_user` VALUES ('33', '1', null, null, null, null);
+INSERT INTO `t_user` VALUES ('44', '1', null, null, null, null);
+INSERT INTO `t_user` VALUES ('55', '2', null, null, null, null);
+INSERT INTO `t_user` VALUES ('66', '2', null, null, null, null);
+INSERT INTO `t_user` VALUES ('77', '3', null, null, null, null);
+INSERT INTO `t_user` VALUES ('88', '3', null, null, null, null);
+INSERT INTO `t_user` VALUES ('99', '4', null, null, null, null);
 
 -- ----------------------------
 -- Table structure for t_user_relation
@@ -48,3 +58,12 @@ CREATE TABLE `t_user_relation` (
 -- ----------------------------
 -- Records of t_user_relation
 -- ----------------------------
+INSERT INTO `t_user_relation` VALUES ('1', '11', '', '22');
+INSERT INTO `t_user_relation` VALUES ('2', '22', '', '33');
+INSERT INTO `t_user_relation` VALUES ('3', '33', '', '44');
+INSERT INTO `t_user_relation` VALUES ('4', '44', null, '55');
+INSERT INTO `t_user_relation` VALUES ('5', '55', null, '66');
+INSERT INTO `t_user_relation` VALUES ('6', '66', null, '77');
+INSERT INTO `t_user_relation` VALUES ('7', '77', null, '88');
+INSERT INTO `t_user_relation` VALUES ('8', '88', null, '99');
+INSERT INTO `t_user_relation` VALUES ('9', '99', null, '100');
